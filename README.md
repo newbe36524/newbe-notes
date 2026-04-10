@@ -1,16 +1,27 @@
 # newbe-notes
 
-个人知识库。先建骨架，再逐步填充。
+这个仓库现在分成两层：
 
-## 目录
+- `content/`：实际笔记内容与目录结构
+- `apps/site/`：渲染这些笔记的 Astro 站点
 
-- [[00-Index/README|00-Index]]：入口与导航
-- [[10-Projects/README|10-Projects]]：项目笔记
-- [[20-Engineering/README|20-Engineering]]：工程实践
-- [[30-Operations/README|30-Operations]]：运维与发布
-- [[90-Templates/README|90-Templates]]：模板
-- [[99-Inbox/README|99-Inbox]]：临时收纳
+内容站点会直接读取 `content/**/*.md`，因此新增、移动或整理笔记时，优先在
+`content/` 下操作，不需要把 Markdown 再复制一份到 `apps/site/src/`。
 
-## 当前重点
+## 常用命令
 
-- [[20-Engineering/Container/Docker 多平台发布经验|Docker 多平台发布经验]]
+```bash
+corepack pnpm install
+corepack pnpm run dev
+corepack pnpm run build
+corepack pnpm run preview
+corepack pnpm run check
+corepack pnpm run validate
+```
+
+## 内容约定
+
+- 根入口笔记是 `content/README.md`
+- 分类目录继续使用 `content/00-Index/`、`content/20-Engineering/` 这类结构
+- 站点会把 `README.md` 目录页映射成目录路由，例如 `content/00-Index/README.md` -> `/00-Index/`
+- Obsidian 风格 wiki link 会在构建时转换成站点链接
