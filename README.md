@@ -23,5 +23,5 @@ corepack pnpm run validate
 
 - 根入口笔记是 `content/README.md`
 - 分类目录继续使用 `content/00-Index/`、`content/20-Engineering/` 这类结构
-- 站点会把 `README.md` 目录页映射成目录路由，例如 `content/00-Index/README.md` -> `/00-Index/`
+- 每篇笔记应在 frontmatter 中定义 ASCII `slug`
 - Obsidian 风格 wiki link 会在构建时转换成站点链接
