@@ -1,0 +1,30 @@
+---
+import NotesLayout from "../layouts/NotesLayout.astro";
+import { getAllNotes, getNoteByRoutePath } from "../lib/notes";
+
+const notes = await getAllNotes();
+const homeNote = await getNoteByRoutePath("/");
+const featuredNotes = notes.filter((note) => !note.isDirectoryIndex).slice(0, 3);
+
+if (!homeNote) {
+  throw new Error("Missing content/README.md for the home page.");
+}
+---
+
+<NotesLayout title={homeNote.title} notes={notes} currentRoute="/">
+  <section class="surface">
+    <article class="note-body" set:html={homeNote.html} />
+
+    <section class="note-grid">
+      {featuredNotes.map((note) => (
+        <article class="note-card">
+          <a href={note.routePath}>
+            <strong>{note.title}</strong>
+          </a>
+          <p>{note.excerpt}</p>
+        </article>
+      ))}
+    </section>
+  </section>
+</NotesLayout>
+

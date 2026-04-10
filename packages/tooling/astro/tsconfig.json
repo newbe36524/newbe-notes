@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "astro",
+    "types": ["astro/client", "node"],
+    "baseUrl": "../../..",
+    "paths": {
+      "@newbe-notes/tooling/*": ["packages/tooling/*"]
+    }
+  }
+}
+

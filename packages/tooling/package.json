@@ -1,0 +1,12 @@
+{
+  "name": "@newbe-notes/tooling",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "exports": {
+    "./astro/integration-policy": "./astro/integration-policy.mjs",
+    "./astro/vite-shared": "./astro/vite-shared.mjs",
+    "./astro/tsconfig.json": "./astro/tsconfig.json"
+  }
+}
+

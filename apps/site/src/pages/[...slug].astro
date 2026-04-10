@@ -1,0 +1,36 @@
+---
+import NotesLayout from "../layouts/NotesLayout.astro";
+import { getAllNotes, getNoteByRoutePath } from "../lib/notes";
+
+export async function getStaticPaths() {
+  const notes = await getAllNotes();
+
+  return notes
+    .filter((note) => note.routePath !== "/")
+    .map((note) => ({
+      params: {
+        slug: note.slugSegments.join("/")
+      }
+    }));
+}
+
+const slugParam = Astro.params.slug;
+const slugSegments = typeof slugParam === "string" ? slugParam.split("/").filter(Boolean) : [];
+const currentRoute =
+  slugSegments.length === 0
+    ? "/"
+    : `/${slugSegments.map((segment) => encodeURIComponent(segment)).join("/")}/`;
+const notes = await getAllNotes();
+const note = await getNoteByRoutePath(currentRoute);
+
+if (!note) {
+  throw new Error(`No note matched route ${currentRoute}.`);
+}
+---
+
+<NotesLayout title={note.title} notes={notes} currentRoute={currentRoute}>
+  <section class="surface">
+    <p class="eyebrow">{note.sourcePath}</p>
+    <article class="note-body" set:html={note.html} />
+  </section>
+</NotesLayout>
