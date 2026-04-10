@@ -1,0 +1,17 @@
+---
+import NotesLayout from "../layouts/NotesLayout.astro";
+import { getAllNotes } from "../lib/notes";
+
+const notes = await getAllNotes();
+---
+
+<NotesLayout title="Not Found" notes={notes} currentRoute="">
+  <section class="surface">
+    <p class="eyebrow">404</p>
+    <article class="note-body">
+      <h1>Page not found</h1>
+      <p>The requested note or route does not exist.</p>
+      <p><a href="/">Return to the notes index</a></p>
+    </article>
+  </section>
+</NotesLayout>
