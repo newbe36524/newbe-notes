@@ -44,6 +44,8 @@ async function runPnpm(args) {
 }
 
 async function waitForHtml(url, expectedText) {
+  const expectedValues = Array.isArray(expectedText) ? expectedText : [expectedText];
+
   for (let attempt = 0; attempt < 30; attempt += 1) {
     try {
       const response = await fetch(url);
@@ -51,7 +53,7 @@ async function waitForHtml(url, expectedText) {
       if (response.ok) {
         const body = await response.text();
 
-        if (body.includes(expectedText)) {
+        if (expectedValues.every((value) => body.includes(value))) {
           return;
         }
       }
@@ -102,30 +104,51 @@ async function main() {
   await verifyLongRunningCommand(["run", "dev"], [
     {
       url: "http://127.0.0.1:4321/",
-      expectedText: "个人知识库"
+      expectedText: [
+        "个人知识库",
+        "HagiCode public links",
+        "href=\"https://docs.hagicode.com/\"",
+        "Curated HagiCode links"
+      ]
     },
     {
       url: "http://127.0.0.1:4321/index/",
-      expectedText: "入口页"
+      expectedText: ["入口页", "site-header", "site-footer"]
     },
     {
-      url: "http://127.0.0.1:4321/index/",
-      expectedText: "/engineering/container/docker-multi-platform-publishing/"
+      url: "http://127.0.0.1:4321/projects/hagicode-public-sites-and-community/",
+      expectedText: [
+        "content/10-Projects/HagiCode 公开站点与社群入口.md",
+        "Public HagiCode note",
+        "target=\"_blank\""
+      ]
     }
   ]);
   await runPnpm(["run", "build"]);
   await verifyLongRunningCommand(["run", "preview"], [
     {
       url: "http://127.0.0.1:4322/",
-      expectedText: "个人知识库"
+      expectedText: [
+        "个人知识库",
+        "HagiCode public links",
+        "Curated HagiCode links"
+      ]
     },
     {
       url: "http://127.0.0.1:4322/engineering/container/docker-multi-platform-publishing/",
-      expectedText: "Docker 多平台发布经验"
+      expectedText: [
+        "Docker 多平台发布经验",
+        "Route",
+        "href=\"https://status.hagicode.com/\""
+      ]
     },
     {
       url: "http://127.0.0.1:4322/operations/",
-      expectedText: "/operations/hagicode-site-aliyun-esa/"
+      expectedText: [
+        "/operations/hagicode-site-aliyun-esa/",
+        "sidebar-card",
+        "HagiCode 相关入口仅保留公开、安全、适合长期引用的链接。"
+      ]
     }
   ]);
 
