@@ -1,0 +1,9 @@
+{
+  "name": "newbe-notes",
+  "installCommand": "corepack pnpm install --frozen-lockfile",
+  "buildCommand": "corepack pnpm run build",
+  "assets": {
+    "directory": "./apps/site/dist",
+    "notFoundStrategy": "404Page"
+  }
+}
