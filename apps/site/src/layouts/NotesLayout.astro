@@ -1,4 +1,7 @@
 ---
+import SiteFooter from "../components/site-footer.astro";
+import SiteHeader from "../components/site-header.astro";
+import { formatSectionLabel, matchesRoute } from "../lib/site-shell";
 import type { NoteRecord } from "../lib/notes";
 
 interface Props {
@@ -9,13 +12,30 @@ interface Props {
 
 const { title, notes, currentRoute } = Astro.props;
 const homeNote = notes.find((note) => note.routePath === "/");
-const groupedNotes = new Map<string, NoteRecord[]>();
+const groupedNotes = new Map<
+  string,
+  {
+    label: string;
+    href: string;
+    items: NoteRecord[];
+  }
+>();
 
 for (const note of notes.filter((entry) => entry.routePath !== "/")) {
-  const groupName = note.slugSegments[0] ?? "misc";
-  const existing = groupedNotes.get(groupName) ?? [];
-  existing.push(note);
-  groupedNotes.set(groupName, existing);
+  const groupKey = note.slugSegments[0] ?? "misc";
+  const existing = groupedNotes.get(groupKey) ?? {
+    label: formatSectionLabel(groupKey),
+    href: note.routePath,
+    items: []
+  };
+
+  if (note.isDirectoryIndex && note.slugSegments.length === 1) {
+    existing.label = note.title;
+    existing.href = note.routePath;
+  }
+
+  existing.items.push(note);
+  groupedNotes.set(groupKey, existing);
 }
 ---
 
@@ -26,32 +46,55 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
     <title>{title} | newbe-notes</title>
   </head>
   <body>
-    <div class="shell">
-      <aside class="sidebar">
-        <a class:list={["home-link", currentRoute === "/" && "active"]} href="/">
-          {homeNote?.title ?? "newbe-notes"}
-        </a>
+    <div class="page-shell">
+      <div class="frame">
+        <SiteHeader currentRoute={currentRoute} />
 
-        {[...groupedNotes.entries()].map(([groupName, groupItems]) => (
-          <section class="nav-group">
-            <h2>{groupName}</h2>
-            <div class="nav-links">
-              {groupItems.map((note) => (
-                <a
-                  class:list={["nav-link", note.routePath === currentRoute && "active"]}
-                  href={note.routePath}
-                >
-                  {note.title}
-                </a>
+        <div class="content-grid">
+          <aside class="sidebar" aria-label="笔记分组导航">
+            <div class="sidebar-card">
+              <a class:list={["home-link", currentRoute === "/" && "active"]} href="/" aria-current={currentRoute === "/" ? "page" : undefined}>
+                <span class="home-label">Root note</span>
+                <strong>{homeNote?.title ?? "newbe-notes"}</strong>
+              </a>
+
+              {[...groupedNotes.entries()].map(([groupName, group]) => (
+                <section class="nav-group">
+                  <div class="nav-group-heading">
+                    <a
+                      href={group.href}
+                      class:list={["nav-group-link", matchesRoute(currentRoute, group.href, "prefix") && "active"]}
+                      aria-current={matchesRoute(currentRoute, group.href, "prefix") ? "page" : undefined}
+                    >
+                      {group.label}
+                    </a>
+                    <span>{groupName}</span>
+                  </div>
+                  <div class="nav-links">
+                    {group.items
+                      .filter((note) => !(note.isDirectoryIndex && note.routePath === group.href))
+                      .map((note) => (
+                      <a
+                        class:list={["nav-link", note.routePath === currentRoute && "active"]}
+                        href={note.routePath}
+                        aria-current={note.routePath === currentRoute ? "page" : undefined}
+                      >
+                        {note.title}
+                      </a>
+                    ))}
+                  </div>
+                </section>
               ))}
             </div>
-          </section>
-        ))}
-      </aside>
+          </aside>
 
-      <main class="main">
-        <slot />
-      </main>
+          <main class="main">
+            <slot />
+          </main>
+        </div>
+
+        <SiteFooter currentRoute={currentRoute} />
+      </div>
     </div>
   </body>
 </html>
@@ -72,24 +115,43 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
     min-height: 100vh;
   }
 
-  .shell {
-    display: grid;
-    grid-template-columns: minmax(15rem, 20rem) minmax(0, 1fr);
+  .page-shell {
     min-height: 100vh;
+    padding: 1.25rem;
+  }
+
+  .frame {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 94rem;
+    margin: 0 auto;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
   }
 
   .sidebar {
     position: sticky;
-    top: 0;
-    align-self: start;
-    min-height: 100vh;
-    padding: 2rem 1.25rem 2.5rem;
-    border-right: 1px solid rgba(57, 55, 48, 0.12);
-    background: rgba(255, 250, 244, 0.8);
+    top: 1.25rem;
+  }
+
+  .sidebar-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(57, 55, 48, 0.12);
+    border-radius: 1.5rem;
+    background: rgba(255, 250, 244, 0.82);
+    box-shadow: 0 18px 42px rgba(39, 52, 93, 0.08);
     backdrop-filter: blur(14px);
   }
 
   .home-link,
+  .nav-group-link,
   .nav-link {
     display: block;
     color: inherit;
@@ -97,21 +159,35 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
   }
 
   .home-link {
-    margin-bottom: 1.5rem;
-    font-size: 1.2rem;
-    font-weight: 700;
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.52);
+    box-shadow: inset 0 0 0 1px rgba(39, 52, 93, 0.08);
   }
 
-  .nav-group + .nav-group {
-    margin-top: 1.5rem;
-  }
-
-  .nav-group h2 {
-    margin: 0 0 0.65rem;
-    font-size: 0.78rem;
-    letter-spacing: 0.12em;
+  .home-label,
+  .nav-group-heading span {
+    display: block;
+    margin-bottom: 0.28rem;
+    font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #6d655d;
+  }
+
+  .nav-group {
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .nav-group-heading {
+    display: grid;
+    gap: 0.18rem;
+  }
+
+  .nav-group-link {
+    font-weight: 700;
   }
 
   .nav-links {
@@ -120,22 +196,25 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
   }
 
   .nav-link {
-    padding: 0.5rem 0.65rem;
-    border-radius: 0.8rem;
-    line-height: 1.35;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.85rem;
+    line-height: 1.45;
   }
 
-  .active {
-    background: rgba(34, 55, 96, 0.1);
-    box-shadow: inset 0 0 0 1px rgba(34, 55, 96, 0.08);
+  .home-link.active,
+  .nav-group-link.active,
+  .nav-link.active {
+    background: rgba(34, 55, 96, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(34, 55, 96, 0.1);
   }
 
   .main {
-    padding: 3rem 1.5rem 5rem;
+    min-width: 0;
   }
 
   :global(.surface) {
-    max-width: 54rem;
+    width: 100%;
+    max-width: 58rem;
     margin: 0 auto;
     padding: 2rem 2.25rem;
     border: 1px solid rgba(39, 52, 93, 0.12);
@@ -187,7 +266,8 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
     color: inherit;
   }
 
-  :global(.note-body a) {
+  :global(.note-body a),
+  :global(.article-link) {
     color: #204f99;
   }
 
@@ -214,20 +294,53 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
     margin-bottom: 0;
   }
 
+  :global(.section-heading) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 2rem 0 1rem;
+  }
+
+  :global(.section-heading h2) {
+    margin: 0;
+  }
+
+  :global(.meta-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.meta-card) {
+    padding: 0.85rem 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 249, 241, 0.86);
+    box-shadow: inset 0 0 0 1px rgba(39, 52, 93, 0.08);
+  }
+
+  :global(.meta-card strong) {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
   @media (max-width: 900px) {
-    .shell {
+    .page-shell {
+      padding: 1rem;
+    }
+
+    .content-grid {
       grid-template-columns: 1fr;
     }
 
     .sidebar {
       position: static;
-      min-height: auto;
-      border-right: 0;
-      border-bottom: 1px solid rgba(57, 55, 48, 0.12);
     }
 
-    .main {
-      padding-top: 1.5rem;
+    .sidebar-card {
+      padding: 1.1rem;
+      border-radius: 1.2rem;
     }
 
     :global(.surface) {
@@ -235,5 +348,20 @@ for (const note of notes.filter((entry) => entry.routePath !== "/")) {
       border-radius: 1.2rem;
     }
   }
-</style>
 
+  @media (max-width: 640px) {
+    .page-shell {
+      padding: 0.85rem;
+    }
+
+    .frame,
+    .content-grid {
+      gap: 1rem;
+    }
+
+    :global(.section-heading) {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

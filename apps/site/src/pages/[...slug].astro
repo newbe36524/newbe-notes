@@ -1,6 +1,7 @@
 ---
 import NotesLayout from "../layouts/NotesLayout.astro";
 import { getAllNotes, getNoteByRoutePath } from "../lib/notes";
+import { hagiCodeReferenceRoute } from "../lib/site-shell";
 
 export async function getStaticPaths() {
   const notes = await getAllNotes();
@@ -30,7 +31,23 @@ if (!note) {
 
 <NotesLayout title={note.title} notes={notes} currentRoute={currentRoute}>
   <section class="surface">
-    <p class="eyebrow">{note.sourcePath}</p>
+    <p class="eyebrow">Note detail / {currentRoute}</p>
+    <div class="meta-grid">
+      <div class="meta-card">
+        <strong>Source</strong>
+        <span>{note.sourcePath}</span>
+      </div>
+      <div class="meta-card">
+        <strong>Route</strong>
+        <span>{note.routePath}</span>
+      </div>
+      <div class="meta-card">
+        <strong>Public HagiCode note</strong>
+        <a class="article-link" href={hagiCodeReferenceRoute}>
+          查看公开入口整理
+        </a>
+      </div>
+    </div>
     <article class="note-body" set:html={note.html} />
   </section>
 </NotesLayout>

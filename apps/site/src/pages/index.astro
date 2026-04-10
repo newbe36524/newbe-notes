@@ -5,6 +5,7 @@ import { getAllNotes, getNoteByRoutePath } from "../lib/notes";
 const notes = await getAllNotes();
 const homeNote = await getNoteByRoutePath("/");
 const featuredNotes = notes.filter((note) => !note.isDirectoryIndex).slice(0, 3);
+const totalNotes = notes.filter((note) => note.routePath !== "/").length;
 
 if (!homeNote) {
   throw new Error("Missing content/README.md for the home page.");
@@ -13,7 +14,15 @@ if (!homeNote) {
 
 <NotesLayout title={homeNote.title} notes={notes} currentRoute="/">
   <section class="surface">
+    <p class="eyebrow">Home / Root note</p>
     <article class="note-body" set:html={homeNote.html} />
+
+    <div class="section-heading">
+      <h2>精选笔记</h2>
+      <a class="article-link" href="/index/">
+        浏览全部入口（{totalNotes}）
+      </a>
+    </div>
 
     <section class="note-grid">
       {featuredNotes.map((note) => (
@@ -27,4 +36,3 @@ if (!homeNote) {
     </section>
   </section>
 </NotesLayout>
-
