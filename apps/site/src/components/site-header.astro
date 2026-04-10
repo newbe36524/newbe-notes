@@ -1,0 +1,218 @@
+---
+import {
+  getHagiCodeLinks,
+  isLinkCurrent,
+  primaryNavItems,
+  siteShellMeta
+} from "../lib/site-shell";
+
+interface Props {
+  currentRoute: string;
+}
+
+const { currentRoute } = Astro.props;
+const quickLinks = getHagiCodeLinks("header");
+---
+
+<header class="site-header">
+  <div class="brand-block">
+    <a class="brand-link" href="/">
+      <span class="brand-name">{siteShellMeta.name}</span>
+      <span class="brand-tagline">{siteShellMeta.tagline}</span>
+    </a>
+    <p class="brand-summary">{siteShellMeta.summary}</p>
+  </div>
+
+  <nav class="primary-nav" aria-label="站点主导航">
+    {primaryNavItems.map((item) => {
+      const active = isLinkCurrent(currentRoute, item);
+
+      return (
+        <a
+          class:list={["primary-link", active && "active"]}
+          href={item.href}
+          aria-current={active ? "page" : undefined}
+          title={item.description}
+        >
+          {item.label}
+        </a>
+      );
+    })}
+  </nav>
+
+  <section class="quick-links" aria-label="HagiCode 公开入口">
+    <p class="quick-links-label">HagiCode public links</p>
+    <div class="quick-links-list">
+      {quickLinks.map((item) => {
+        const active = isLinkCurrent(currentRoute, item);
+
+        return (
+          <a
+            class:list={["quick-link", active && "active", item.external && "external"]}
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            title={item.description}
+            target={item.external ? "_blank" : undefined}
+            rel={item.external ? "noreferrer" : undefined}
+          >
+            <span>{item.label}</span>
+            {item.external && <span class="link-badge">Public</span>}
+          </a>
+        );
+      })}
+    </div>
+  </section>
+</header>
+
+<style>
+  .site-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: start;
+    padding: 1.5rem;
+    border: 1px solid rgba(57, 55, 48, 0.12);
+    border-radius: 1.5rem;
+    background: rgba(255, 250, 244, 0.84);
+    box-shadow: 0 20px 50px rgba(39, 52, 93, 0.08);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand-link,
+  .primary-link,
+  .quick-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .brand-link {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .brand-name {
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .brand-tagline,
+  .quick-links-label {
+    font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6d655d;
+  }
+
+  .brand-summary {
+    margin: 0.85rem 0 0;
+    max-width: 32rem;
+    line-height: 1.7;
+    color: #403c37;
+  }
+
+  .primary-nav,
+  .quick-links-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .primary-nav {
+    align-self: center;
+    justify-content: center;
+  }
+
+  .primary-link,
+  .quick-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: inset 0 0 0 1px rgba(39, 52, 93, 0.1);
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .primary-link:hover,
+  .quick-link:hover {
+    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(39, 52, 93, 0.12), 0 10px 20px rgba(39, 52, 93, 0.08);
+  }
+
+  .primary-link.active,
+  .quick-link.active {
+    background: rgba(34, 55, 96, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(34, 55, 96, 0.12);
+  }
+
+  .quick-links {
+    justify-self: end;
+    width: 100%;
+    max-width: 25rem;
+  }
+
+  .quick-links-label {
+    margin: 0 0 0.55rem;
+  }
+
+  .quick-links-list {
+    justify-content: flex-end;
+  }
+
+  .quick-link.external {
+    padding-right: 0.7rem;
+  }
+
+  .link-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(32, 79, 153, 0.08);
+    font-family: "IBM Plex Mono", "SFMono-Regular", monospace;
+    font-size: 0.7rem;
+    color: #204f99;
+  }
+
+  @media (max-width: 1050px) {
+    .site-header {
+      grid-template-columns: 1fr;
+    }
+
+    .primary-nav {
+      justify-content: flex-start;
+    }
+
+    .quick-links {
+      justify-self: stretch;
+      max-width: none;
+    }
+
+    .quick-links-list {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .site-header {
+      padding: 1.15rem;
+      border-radius: 1.2rem;
+    }
+
+    .brand-summary {
+      margin-top: 0.7rem;
+      font-size: 0.96rem;
+    }
+
+    .primary-link,
+    .quick-link {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>
