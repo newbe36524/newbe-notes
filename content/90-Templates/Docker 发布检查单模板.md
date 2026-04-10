@@ -1,3 +1,7 @@
+---
+slug: templates/docker-release-checklist
+---
+
 # Docker 发布检查单模板
 
 ## 基本信息

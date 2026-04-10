@@ -1,3 +1,7 @@
+---
+slug: engineering/container/docker-multi-platform-publishing
+---
+
 # Docker 多平台发布经验
 
 ## 目的

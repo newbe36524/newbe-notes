@@ -1,3 +1,7 @@
+---
+slug: /
+---
+
 # newbe-notes
 
 个人知识库。先建骨架，再逐步填充。
@@ -13,7 +17,7 @@
 
 ## 当前重点
 
-- [[20-Engineering/Container/Docker 多平台发布经验|Docker 多平台发布经验]]
+- [[engineering/container/docker-multi-platform-publishing|Docker 多平台发布经验]]
 
 ## Astro Workspace Contract
 

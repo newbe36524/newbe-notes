@@ -1,3 +1,7 @@
+---
+slug: projects
+---
+
 # 10-Projects
 
 项目级笔记。

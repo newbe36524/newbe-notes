@@ -1,3 +1,7 @@
+---
+slug: operations/hagicode-site-aliyun-esa
+---
+
 # HagiCode Site 发布到阿里云 ESA 笔记
 
 ## 目的

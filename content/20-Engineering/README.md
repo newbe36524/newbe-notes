@@ -1,3 +1,7 @@
+---
+slug: engineering
+---
+
 # 20-Engineering
 
 工程经验沉淀。

@@ -1,3 +1,7 @@
+---
+slug: index
+---
+
 # 00-Index
 
 入口页。
@@ -5,7 +9,7 @@
 ## 导航
 
 - [[../README|Vault 首页]]
-- [[../20-Engineering/Container/Docker 多平台发布经验|Docker 多平台发布经验]]
+- [[engineering/container/docker-multi-platform-publishing|Docker 多平台发布经验]]
 
 ## 约定
 

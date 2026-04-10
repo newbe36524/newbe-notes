@@ -1,3 +1,7 @@
+---
+slug: templates
+---
+
 # 90-Templates
 
 模板区。
