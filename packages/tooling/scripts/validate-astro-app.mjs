@@ -105,8 +105,12 @@ async function main() {
       expectedText: "个人知识库"
     },
     {
-      url: "http://127.0.0.1:4321/00-Index/",
+      url: "http://127.0.0.1:4321/index/",
       expectedText: "入口页"
+    },
+    {
+      url: "http://127.0.0.1:4321/index/",
+      expectedText: "/engineering/container/docker-multi-platform-publishing/"
     }
   ]);
   await runPnpm(["run", "build"]);
@@ -116,8 +120,12 @@ async function main() {
       expectedText: "个人知识库"
     },
     {
-      url: "http://127.0.0.1:4322/20-Engineering/Container/Docker%20%E5%A4%9A%E5%B9%B3%E5%8F%B0%E5%8F%91%E5%B8%83%E7%BB%8F%E9%AA%8C/",
+      url: "http://127.0.0.1:4322/engineering/container/docker-multi-platform-publishing/",
       expectedText: "Docker 多平台发布经验"
+    },
+    {
+      url: "http://127.0.0.1:4322/operations/",
+      expectedText: "/operations/hagicode-site-aliyun-esa/"
     }
   ]);
 
