@@ -25,3 +25,10 @@ corepack pnpm run validate
 - 分类目录继续使用 `content/00-Index/`、`content/20-Engineering/` 这类结构
 - 每篇笔记应在 frontmatter 中定义 ASCII `slug`
 - Obsidian 风格 wiki link 会在构建时转换成站点链接
+
+## 站点壳层导航
+
+- 统一页眉、页脚与 HagiCode 公开入口定义集中在 `apps/site/src/lib/site-shell.ts`
+- `apps/site/src/components/site-header.astro` 只消费共享配置里的精简快捷入口
+- `apps/site/src/components/site-footer.astro` 复用同一份配置展示扩展版公开链接
+- 新增 HagiCode 壳层链接时，只放公开、安全、适合长期引用的入口；详细长尾渠道继续维护在 `content/10-Projects/HagiCode 公开站点与社群入口.md`
